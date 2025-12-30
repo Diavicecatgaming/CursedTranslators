@@ -1,227 +1,202 @@
 <!DOCTYPE html>
-<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Cataneese & Cheenese Encoder/Decoder</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #121212;
-      color: #eee;
-      padding: 20px;
-    }
-    textarea {
-      width: 100%;
-      height: 120px;
-      background: #1e1e1e;
-      color: #fff;
-      border: 1px solid #555;
-      border-radius: 8px;
-      padding: 8px;
-      margin: 6px 0;
-      resize: vertical;
-    }
-    button {
-      background: #333;
-      color: white;
-      border: none;
-      padding: 10px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      margin: 4px;
-    }
-    button:hover { background: #444; }
-    #counter {
-      font-weight: bold;
-      margin-top: 6px;
-    }
-    .mode-select {
-      margin-bottom: 10px;
-      padding: 10px;
-      border: 1px solid #444;
-      border-radius: 6px;
-      background: #1a1a1a;
-    }
-  </style>
+  <title>Cursed Translators</title>
+  <link rel="icon" href="icon.png">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <h1>Cursed Translators</h1>
+  <h2>sssssssssssssssssssssssssssss</h2>
+  <hr>
+  <div class="translator" data-type="cheenese" id="Translator">
+  <span id="TranslatorText">
+Cheenese Translator™ (yes that's that actual name i gave this)
+<br> bassically just caesar cipher but rebranded 
+</span>
+<br>
+    <textarea class="input" placeholder="Enter text here..."></textarea>
 
-  <h2>Cataneese & Cheenese Converter</h2>
-
-  <!-- Mode Selector -->
-  <div class="mode-select">
-    <label>
-      <input type="radio" name="mode" value="cataneese" checked>
-      Cataneese
-    </label>
-    <label>
-      <input type="radio" name="mode" value="cheenese">
-      Cheenese
-    </label>
+  <div class="buttons">
+    <button onclick="encode(this)">Encode</button>
+    <button onclick="decode(this)">Decode</button>
+    <button onclick="pasteText(this)">Paste</button>
+    <button onclick="copyText(this)">Copy</button>
   </div>
 
-  <!-- Input -->
-  <textarea id="inputText" placeholder="Enter text here..."></textarea>
+  <textarea class="output" placeholder="Output..." readonly></textarea>
+</div>
+<hr>
+  <div id="Translator" class="translator" data-type="cataneese">
+  <span id="TranslatorText">Cataneese Translator™ (yet again yes that's that actual name i gave this)
+    This one is interesting because it’s mostly original, and its format is somewhat similar to assembly code.
+    <br>
+    <br>
+    The syntax works like this:
+    Text (for example, “egg”) is converted into numbers based on each letter’s position in the alphabet.
+    Each number also includes the letter’s case (uppercase or lowercase).
+    <br>
+    <br>
+    All of this is stored in an array format. For example:
+    egg → TEXT[5[LOW], 7[LOW], 7[LOW]]
+    <br>
+    <br>
+    Spaces are represented using SPACE. Spacing is handled automatically between consecutive TEXT entries.
+    Line breaks are represented by LINEBREAK.
+    <br>
+    <br>
+    And that’s the full format of Cataneese. that was a long one
+  </span>
+    <textarea class="input" placeholder="Enter text here..."></textarea>
 
-  <!-- Buttons -->
-  <div>
-    <button onclick="handleEncode()">Encode</button>
-    <button onclick="handleDecode()">Decode</button>
-    <button onclick="handlePaste()">Paste</button>
-    <button onclick="handleCopy()">Copy</button>
+  <div class="buttons">
+    <button onclick="encode(this)">Encode</button>
+    <button onclick="decode(this)">Decode</button>
+    <button onclick="pasteText(this)">Paste</button>
+    <button onclick="copyText(this)">Copy</button>
   </div>
 
-  <!-- Output -->
-  <textarea id="outputText" placeholder="Output appears here..."></textarea>
-  <div id="counter">Length: 0</div>
-
+  <textarea class="output" placeholder="Output..." readonly></textarea>
+</div>
+<hr>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<h4>No Translators harmed in the making of this website</h4>
+<h5>© DiaviceCat 2026</h5>
+</body>
 <script>
-function isLink(word) {
-  return word.startsWith("http://") || word.startsWith("https://");
+/* ---------- Utilities ---------- */
+
+function getWidget(btn) {
+  return btn.closest(".translator");
 }
 
-function encodeCataneese(input) {
-  const lines = input.split("\n");
-  let encoded = [];
-
-  lines.forEach(line => {
-    if (line.trim() === "") {
-      encoded.push("SPECIAL = [LINE BREAK]");
-      return;
-    }
-
-    const words = line.split(" ");
-    words.forEach(word => {
-      if (isLink(word)) {
-        encoded.push(`LINK = (${word})`);
-      } else {
-        let letters = [];
-        for (let char of word) {
-          let code = char.toUpperCase().charCodeAt(0) - 64;
-          if (code >= 1 && code <= 26) {
-            let caseTag = (char === char.toUpperCase()) ? "UP" : "LOW";
-            letters.push(`${code}[${caseTag}]`);
-          }
-        }
-        if (letters.length > 0) {
-          encoded.push(`TEXT = [${letters.join(" ")}]`);
-        }
-      }
-    });
-  });
-
-  return encoded.join("\n");
-}
-
-function decodeCataneese(input) {
-  const lines = input.split("\n");
-  let decoded = [];
-  let currentLine = [];
-
-  lines.forEach(line => {
-    if (line.startsWith("SPECIAL = [LINE BREAK]")) {
-      decoded.push(currentLine.join(" "));
-      currentLine = [];
-    } else if (line.startsWith("LINK = (")) {
-      currentLine.push(line.match(/\((.*?)\)/)[1]);
-    } else if (line.startsWith("TEXT = [")) {
-      const content = line.match(/\[(.*?)\]/)[1];
-      const parts = content.split(" ");
-      let word = "";
-      parts.forEach(p => {
-        const match = p.match(/(\d+)\[(UP|LOW)\]/);
-        if (match) {
-          let num = parseInt(match[1]);
-          let char = String.fromCharCode(num + 64);
-          if (match[2] === "LOW") char = char.toLowerCase();
-          word += char;
-        }
-      });
-      currentLine.push(word);
-    }
-  });
-
-  if (currentLine.length > 0) decoded.push(currentLine.join(" "));
-  return decoded.join("\n");
-}
-
-function encodeCheenese(input) {
-  return input.split("").map(ch => {
-    let code = ch.toLowerCase().charCodeAt(0);
-    if (code >= 97 && code <= 122) {
-      return String.fromCharCode(((code - 97 + 4) % 26) + 97);
-    }
-    return ch;
-  }).join("");
-}
-
-function decodeCheenese(input) {
-  return input.split("").map(ch => {
-    let code = ch.toLowerCase().charCodeAt(0);
-    if (code >= 97 && code <= 122) {
-      return String.fromCharCode(((code - 97 - 4 + 26) % 26) + 97);
-    }
-    return ch;
-  }).join("");
-}
-
-function updateCounter(text) {
-  const counter = document.getElementById("counter");
-  let len = text.length;
-  counter.textContent = `Length: ${len}`;
-
-  if (len <= 2000) {
-    counter.style.color = "lime";
-  } else if (len <= 4000) {
-    counter.style.color = "yellow";
-    counter.textContent += " (⚠️ Needs Discord Nitro)";
-  } else {
-    counter.style.color = "red";
-    counter.textContent += " (❌ Too long for Discord)";
-  }
-}
-
-function handleEncode() {
-  const input = document.getElementById("inputText").value;
-  const mode = document.querySelector('input[name="mode"]:checked').value;
-  let output = "";
-
-  if (mode === "cataneese") {
-    output = encodeCataneese(input);
-  } else {
-    output = encodeCheenese(input);
-  }
-
-  document.getElementById("outputText").value = output;
-  updateCounter(output);
-}
-
-function handleDecode() {
-  const input = document.getElementById("inputText").value;
-  const mode = document.querySelector('input[name="mode"]:checked').value;
-  let output = "";
-
-  if (mode === "cataneese") {
-    output = decodeCataneese(input);
-  } else {
-    output = decodeCheenese(input);
-  }
-
-  document.getElementById("outputText").value = output;
-  updateCounter(output);
-}
-
-function handlePaste() {
+function pasteText(btn) {
   navigator.clipboard.readText().then(text => {
-    document.getElementById("inputText").value = text;
+    getWidget(btn).querySelector(".input").value = text;
   });
 }
 
-function handleCopy() {
-  const output = document.getElementById("outputText").value;
-  navigator.clipboard.writeText(output);
+function copyText(btn) {
+  const out = getWidget(btn).querySelector(".output").value;
+  navigator.clipboard.writeText(out);
+}
+
+/* ---------- Encode / Decode ---------- */
+
+function encode(btn) {
+  const widget = getWidget(btn);
+  const type = widget.dataset.type;
+  const input = widget.querySelector(".input").value;
+
+  widget.querySelector(".output").value =
+    type === "cheenese"
+      ? cheeneseEncode(input)
+      : cataneeseEncode(input);
+}
+
+function decode(btn) {
+  const widget = getWidget(btn);
+  const type = widget.dataset.type;
+  const input = widget.querySelector(".input").value;
+
+  widget.querySelector(".output").value =
+    type === "cheenese"
+      ? cheeneseDecode(input)
+      : cataneeseDecode(input);
+}
+
+/* ---------- Cheenese (Caesar Cipher, shift 3) ---------- */
+
+function cheeneseEncode(text) {
+  return text.replace(/[a-z]/gi, c => {
+    const base = c <= "Z" ? 65 : 97;
+    return String.fromCharCode((c.charCodeAt(0) - base + 3) % 26 + base);
+  });
+}
+
+function cheeneseDecode(text) {
+  return text.replace(/[a-z]/gi, c => {
+    const base = c <= "Z" ? 65 : 97;
+    return String.fromCharCode((c.charCodeAt(0) - base + 23) % 26 + base);
+  });
+}
+
+/* ---------- Cataneese ---------- */
+
+function cataneeseEncode(text) {
+  let out = [];
+  let currentWord = [];
+
+  for (let char of text) {
+    if (char === " ") {
+      if (currentWord.length > 0) {
+        out.push(`TEXT[${currentWord.join(", ")}]`);
+        currentWord = [];
+      }
+      out.push("SPACE");
+    } 
+    else if (char === "\n") {
+      if (currentWord.length > 0) {
+        out.push(`TEXT[${currentWord.join(", ")}]`);
+        currentWord = [];
+      }
+      out.push("LINEBREAK");
+    } 
+    else if (/[a-z]/i.test(char)) {
+      const pos = char.toLowerCase().charCodeAt(0) - 96;
+      const caseType = char === char.toUpperCase() ? "UP" : "LOW";
+      currentWord.push(`${pos}[${caseType}]`);
+    }
+  }
+
+  // flush last word
+  if (currentWord.length > 0) {
+    out.push(`TEXT[${currentWord.join(", ")}]`);
+  }
+
+  return out.join("\n");
+}
+
+function cataneeseDecode(text) {
+  let out = "";
+
+  const lines = text.split(/\n+/);
+
+  for (let line of lines) {
+    if (line === "SPACE") {
+      out += " ";
+    } 
+    else if (line === "LINEBREAK") {
+      out += "\n";
+    } 
+    else {
+      const match = line.match(/TEXT\[(.+)\]/);
+      if (!match) continue;
+
+      const letters = match[1].split(", ");
+
+      for (let letter of letters) {
+        const parts = letter.match(/(\d+)\[(UP|LOW)\]/);
+        if (!parts) continue;
+
+        let char = String.fromCharCode(Number(parts[1]) + 96);
+        if (parts[2] === "UP") char = char.toUpperCase();
+        out += char;
+      }
+    }
+  }
+
+  return out;
 }
 </script>
-
-</body>
-</html>
